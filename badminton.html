@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Badminton Match Table</title>
+  <style>
+    body { font-family: "Segoe UI", sans-serif; background: #f0f2f5; margin: 20px; }
+    h2, h3 { color: #333; }
+    .container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+    input, button { padding: 8px; margin: 5px; border-radius: 6px; border: 1px solid #ccc; }
+    button { background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    table { border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; min-width: 70px; }
+    th { background: #e9ecef; }
+    .score-cell { cursor: pointer; transition: background 0.2s; }
+    .score-cell:hover { background: #f1f3f5; }
+    .flex { display: flex; gap: 15px; align-items: center; margin-top: 15px; }
+    .ranking { margin-top: 30px; }
+    .delete-btn { color: red; cursor: pointer; font-size: 14px; margin-left: 5px; }
+    .history-page { display: none; margin-top: 20px; background: #fff; padding: 15px; border-radius: 8px; }
+    .history-item { padding: 6px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .undo-btn { background: #28a745; color: white; border: none; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+    .undo-btn:hover { background: #1e7e34; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🏸 ตารางการแข่งขันก๊วนแบด</h2>
+    
+    <div class="flex">
+      <input type="text" id="playerName" placeholder="ใส่ชื่อผู้เล่น (เช่น ตง - พรีม)">
+      <button onclick="addPlayer()">เพิ่มผู้เล่น</button>
+      <button onclick="resetAll()">รีเซ็ตทั้งหมด</button>
+      <button onclick="toggleHistory()">ดูประวัติการบันทึก</button>
+    </div>
+
+    <div id="matchTable"></div>
+
+    <div class="ranking">
+      <h3>📊 Ranking</h3>
+      <table id="rankingTable">
+        <thead>
+          <tr>
+            <th>อันดับ</th>
+            <th>ชื่อทีม</th>
+            <th>ชนะ</th>
+            <th>แพ้</th>
+            <th>แต้มรวม</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="historyPage" class="history-page">
+      <h3>📜 ประวัติการบันทึก</h3>
+      <div id="historyLog"></div>
+    </div>
+  </div>
+
+  <script>
+    let players = [];
+    let results = {}; 
+    let historyLog = []; 
+
+    function getKey(p1, p2) {
+      return [p1, p2].sort().join("|");
+    }
+
+    function addPlayer() {
+      let name = document.getElementById("playerName").value.trim();
+      if (name && !players.includes(name)) {
+        players.push(name);
+        document.getElementById("playerName").value = "";
+        renderTable();
+        updateRanking();
+      }
+    }
+
+    function resetAll() {
+      players = [];
+      results = {};
+      historyLog = [];
+      renderTable();
+      updateRanking();
+      renderHistory();
+    }
+
+    function renderTable() {
+      let html = "<table><tr><th></th>";
+      players.forEach(p => html += `<th>${p}</th>`);
+      html += "</tr>";
+
+      players.forEach((p1, i) => {
+        html += `<tr><th>${p1}</th>`;
+        players.forEach((p2, j) => {
+          if (i === j) {
+            html += `<td style="background:#f8f9fa">-</td>`;
+          } else {
+            let key = getKey(p1, p2);
+            let match = results[key] || {};
+            let display = match.score1 !== undefined ? 
+              (match.p1 === p1 ? `${match.score1}:${match.score2}` : `${match.score2}:${match.score1}`) 
+              + ` <span class='delete-btn' onclick="deleteResult('${key}')">✕</span>` : "";
+            html += `<td class="score-cell" onclick="enterScore('${p1}','${p2}')">${display}</td>`;
+          }
+        });
+        html += "</tr>";
+      });
+
+      html += "</table>";
+      document.getElementById("matchTable").innerHTML = html;
+    }
+
+    function enterScore(p1, p2) {
+      let s1 = prompt("แต้มของ " + p1);
+      let s2 = prompt("แต้มของ " + p2);
+      if (s1 !== null && s2 !== null && !isNaN(s1) && !isNaN(s2)) {
+        let key = getKey(p1, p2);
+        let oldResult = results[key] ? {...results[key]} : null;
+        results[key] = {p1, p2, score1: parseInt(s1), score2: parseInt(s2)};
+        historyLog.push({ 
+          action: "บันทึกผล", 
+          text: `${p1} ${s1} - ${s2} ${p2}`, 
+          key, 
+          oldResult 
+        });
+        updateRanking();
+        renderTable();
+        renderHistory();
+      }
+    }
+
+    function deleteResult(key) {
+      if (results[key]) {
+        let {p1, p2, score1, score2} = results[key];
+        let oldResult = {...results[key]};
+        historyLog.push({ 
+          action: "ลบผล", 
+          text: `${p1} ${score1} - ${score2} ${p2}`, 
+          key, 
+          oldResult 
+        });
+        delete results[key];
+        updateRanking();
+        renderTable();
+        renderHistory();
+      }
+    }
+
+    function undoAction(index) {
+      let log = historyLog[index];
+      if (!log) return;
+
+      if (log.action === "บันทึกผล") {
+        if (log.oldResult) {
+          results[log.key] = log.oldResult;
+        } else {
+          delete results[log.key];
+        }
+      } else if (log.action === "ลบผล") {
+        results[log.key] = log.oldResult;
+      }
+
+      historyLog.push({ action: "Undo", text: `↩ ย้อนคืน: ${log.text}` });
+      updateRanking();
+      renderTable();
+      renderHistory();
+    }
+
+    function updateRanking() {
+      let stats = {};
+      players.forEach(p => stats[p] = {wins: 0, losses: 0, points: 0});
+
+      for (let key in results) {
+        let {p1, p2, score1, score2} = results[key];
+        stats[p1].points += score1;
+        stats[p2].points += score2;
+        if (score1 > score2) { stats[p1].wins++; stats[p2].losses++; }
+        else if (score2 > score1) { stats[p2].wins++; stats[p1].losses++; }
+      }
+
+      let ranking = Object.entries(stats).map(([name, data]) => ({ name, ...data }));
+      ranking.sort((a, b) => b.wins - a.wins || b.points - a.points);
+
+      let tbody = document.querySelector("#rankingTable tbody");
+      tbody.innerHTML = "";
+      ranking.forEach((p, i) => {
+        let row = `<tr>
+          <td>${i + 1}</td>
+          <td>${p.name}</td>
+          <td>${p.wins}</td>
+          <td>${p.losses}</td>
+          <td>${p.points}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function toggleHistory() {
+      let page = document.getElementById("historyPage");
+      page.style.display = (page.style.display === "none" || page.style.display === "") ? "block" : "none";
+    }
+
+    function renderHistory() {
+      let logDiv = document.getElementById("historyLog");
+      logDiv.innerHTML = "";
+      historyLog.forEach((item, index) => {
+        logDiv.innerHTML += `<div class="history-item">${item.action}: ${item.text} 
+          <button class="undo-btn" onclick="undoAction(${index})">Undo</button></div>`;
+      });
+    }
+  </script>
+</body>
+</html>
