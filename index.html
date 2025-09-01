@@ -65,6 +65,23 @@
     let results = {}; 
     let historyLog = []; 
 
+    // โหลดข้อมูลเก่าจาก localStorage
+    function loadData() {
+      if (localStorage.getItem("players")) players = JSON.parse(localStorage.getItem("players"));
+      if (localStorage.getItem("results")) results = JSON.parse(localStorage.getItem("results"));
+      if (localStorage.getItem("historyLog")) historyLog = JSON.parse(localStorage.getItem("historyLog"));
+      renderTable();
+      updateRanking();
+      renderHistory();
+    }
+
+    // เซฟข้อมูลลง localStorage
+    function saveData() {
+      localStorage.setItem("players", JSON.stringify(players));
+      localStorage.setItem("results", JSON.stringify(results));
+      localStorage.setItem("historyLog", JSON.stringify(historyLog));
+    }
+
     function getKey(p1, p2) {
       return [p1, p2].sort().join("|");
     }
@@ -76,16 +93,19 @@
         document.getElementById("playerName").value = "";
         renderTable();
         updateRanking();
+        saveData();
       }
     }
 
     function resetAll() {
+      if (!confirm("⚠️ แน่ใจหรือไม่ที่จะรีเซ็ตข้อมูลทั้งหมด?")) return;
       players = [];
       results = {};
       historyLog = [];
       renderTable();
       updateRanking();
       renderHistory();
+      saveData();
     }
 
     function renderTable() {
@@ -130,6 +150,7 @@
         updateRanking();
         renderTable();
         renderHistory();
+        saveData();
       }
     }
 
@@ -147,6 +168,7 @@
         updateRanking();
         renderTable();
         renderHistory();
+        saveData();
       }
     }
 
@@ -168,6 +190,7 @@
       updateRanking();
       renderTable();
       renderHistory();
+      saveData();
     }
 
     function updateRanking() {
@@ -212,6 +235,9 @@
           <button class="undo-btn" onclick="undoAction(${index})">Undo</button></div>`;
       });
     }
+
+    // โหลดข้อมูลครั้งแรก
+    loadData();
   </script>
 </body>
 </html>
