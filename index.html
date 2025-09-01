@@ -2,48 +2,56 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>🏸 Badminton Neon App</title>
+  <title>🏸 Badmintion Score (Ai pen kon tam)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: "Poppins", "Noto Sans Thai", sans-serif;
-      background: linear-gradient(135deg, #1a0033, #33001a, #000);
-      color: #fff;
-      margin: 20px;
+      font-family: "Fredoka", "Noto Sans Thai Rounded", sans-serif;
+      background: linear-gradient(to bottom, #87ceeb, #fcd77f, #d2a679);
+      margin: 0;
+      padding: 20px;
+      color: #333;
     }
-    h2, h3 { font-weight: 700; color: #fff; text-shadow: 0 0 8px #ff00ff; }
+    h2, h3 {
+      font-weight: 600;
+      color: #5a3e2b;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 28px;
+      color: #5a3e2b;
+      text-shadow: 2px 2px #f9e29c;
+    }
     .container {
-      background: rgba(20, 20, 40, 0.85);
-      padding: 25px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(255, 0, 200, 0.6);
-      margin-bottom: 25px;
+      background: #fff8e7;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(150, 100, 50, 0.3);
+      margin-bottom: 20px;
     }
     input {
       padding: 10px;
-      border-radius: 10px;
-      border: none;
+      border-radius: 8px;
+      border: 1px solid #d2a679;
+      width: 220px;
       font-size: 14px;
-      width: 250px;
-      background: #222;
-      color: #fff;
-      box-shadow: inset 0 0 5px #ff00ff;
     }
     button {
-      padding: 10px 18px;
-      border-radius: 12px;
+      padding: 10px 15px;
+      border-radius: 8px;
       border: none;
       font-weight: 600;
       cursor: pointer;
       font-size: 14px;
       margin: 5px;
-      color: #fff;
-      transition: all 0.2s;
     }
-    button:hover { transform: scale(1.05); }
-    .btn-pink { background: #ff00aa; box-shadow: 0 0 12px #ff00ff; }
-    .btn-green { background: #00ff88; box-shadow: 0 0 12px #00ffcc; color: #111; }
-    .btn-yellow { background: #ffee00; box-shadow: 0 0 12px #ffff66; color: #111; }
-    .btn-red { background: #ff3333; box-shadow: 0 0 12px #ff6666; }
+    .btn-brown { background: #8b5e3c; color: #fff; }
+    .btn-yellow { background: #f7c948; color: #5a3e2b; }
+    .btn-green { background: #a3d977; color: #2b4d1e; }
+    .btn-red { background: #e76f51; color: #fff; }
 
     table {
       border-collapse: collapse;
@@ -53,50 +61,51 @@
       overflow: hidden;
     }
     th, td {
-      border: 1px solid #555;
+      border: 1px solid #e0c097;
       padding: 10px;
       text-align: center;
       font-size: 14px;
     }
     th {
-      background: linear-gradient(90deg, #ff00ff, #6600ff);
-      color: #fff;
-      text-shadow: 0 0 6px #000;
+      background: #f7c948;
+      color: #5a3e2b;
     }
-    tr:nth-child(even) { background: rgba(255, 255, 255, 0.05); }
-    tr:hover td { background: rgba(255, 0, 255, 0.2); }
+    tr:nth-child(even) { background: #fff2cc; }
+    tr:hover td { background: #ffeaa7; }
     .score-cell { cursor: pointer; }
-    .delete-btn { color: #ff5555; margin-left: 6px; cursor: pointer; text-shadow: 0 0 5px #ff0000; }
+    .delete-btn { color: #e63946; margin-left: 6px; cursor: pointer; }
 
     .history-item {
-      background: rgba(50, 0, 50, 0.7);
-      border-radius: 12px;
+      background: #fffbe6;
+      border-radius: 10px;
       padding: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+      margin-bottom: 8px;
+      box-shadow: 0 2px 5px rgba(150, 100, 50, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .undo-btn {
-      background: #00ff99;
+      background: #a3d977;
       border: none;
-      color: #111;
-      padding: 6px 12px;
-      border-radius: 8px;
+      color: #2b4d1e;
+      padding: 5px 10px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 12px;
       font-weight: bold;
-      box-shadow: 0 0 10px #00ffaa;
     }
-    .undo-btn:hover { background: #00ffaa; }
   </style>
 </head>
 <body>
+  <div class="header">
+    <h1>🏜️ Badmintion Score (Ai pen kon tam) 🌵🏸</h1>
+  </div>
+
   <div class="container">
-    <h2>🏸 Badminton Neon Score</h2>
-    <input type="text" id="playerName" placeholder="ใส่ชื่อผู้เล่น (เช่น ตง - พรีม)">
-    <button class="btn-pink" onclick="addPlayer()">➕ เพิ่มผู้เล่น</button>
+    <h2>เพิ่มผู้เล่น</h2>
+    <input type="text" id="playerName" placeholder="เช่น ตง - พรีม">
+    <button class="btn-green" onclick="addPlayer()">➕ เพิ่ม</button>
     <button class="btn-red" onclick="resetAll()">♻ รีเซ็ต</button>
     <button class="btn-yellow" onclick="toggleHistory()">📜 ประวัติ</button>
   </div>
@@ -104,7 +113,7 @@
   <div class="container" id="matchTable"></div>
 
   <div class="container ranking">
-    <h3>🏆 Ranking</h3>
+    <h3>🏆 Ranking Board</h3>
     <table id="rankingTable">
       <thead>
         <tr>
@@ -129,7 +138,6 @@
     let results = {}; 
     let historyLog = []; 
 
-    // โหลดข้อมูลเก่า
     function loadData() {
       if (localStorage.getItem("players")) players = JSON.parse(localStorage.getItem("players"));
       if (localStorage.getItem("results")) results = JSON.parse(localStorage.getItem("results"));
@@ -138,51 +146,34 @@
       updateRanking();
       renderHistory();
     }
-
-    // เซฟข้อมูล
     function saveData() {
       localStorage.setItem("players", JSON.stringify(players));
       localStorage.setItem("results", JSON.stringify(results));
       localStorage.setItem("historyLog", JSON.stringify(historyLog));
     }
-
-    function getKey(p1, p2) {
-      return [p1, p2].sort().join("|");
-    }
-
+    function getKey(p1, p2) { return [p1, p2].sort().join("|"); }
     function addPlayer() {
       let name = document.getElementById("playerName").value.trim();
       if (name && !players.includes(name)) {
         players.push(name);
         document.getElementById("playerName").value = "";
-        renderTable();
-        updateRanking();
-        saveData();
+        renderTable(); updateRanking(); saveData();
       }
     }
-
     function resetAll() {
-      if (!confirm("⚠️ แน่ใจหรือไม่ที่จะรีเซ็ตข้อมูลทั้งหมด?")) return;
-      players = [];
-      results = {};
-      historyLog = [];
-      renderTable();
-      updateRanking();
-      renderHistory();
-      saveData();
+      if (!confirm("⚠️ รีเซ็ตข้อมูลทั้งหมด?")) return;
+      players = []; results = {}; historyLog = [];
+      renderTable(); updateRanking(); renderHistory(); saveData();
     }
-
     function renderTable() {
       let html = "<table><tr><th></th>";
       players.forEach(p => html += `<th>${p}</th>`);
       html += "</tr>";
-
       players.forEach((p1, i) => {
         html += `<tr><th>${p1}</th>`;
         players.forEach((p2, j) => {
-          if (i === j) {
-            html += `<td style="background:#111">-</td>`;
-          } else {
+          if (i === j) html += `<td style="background:#fcd77f">-</td>`;
+          else {
             let key = getKey(p1, p2);
             let match = results[key] || {};
             let display = match.score1 !== undefined ? 
@@ -193,11 +184,9 @@
         });
         html += "</tr>";
       });
-
       html += "</table>";
       document.getElementById("matchTable").innerHTML = html;
     }
-
     function enterScore(p1, p2) {
       let s1 = prompt("แต้มของ " + p1);
       let s2 = prompt("แต้มของ " + p2);
@@ -205,103 +194,57 @@
         let key = getKey(p1, p2);
         let oldResult = results[key] ? {...results[key]} : null;
         results[key] = {p1, p2, score1: parseInt(s1), score2: parseInt(s2)};
-        historyLog.push({ 
-          action: "บันทึกผล", 
-          text: `${p1} ${s1} - ${s2} ${p2}`, 
-          key, 
-          oldResult 
-        });
-        updateRanking();
-        renderTable();
-        renderHistory();
-        saveData();
+        historyLog.push({ action: "บันทึกผล", text: `${p1} ${s1} - ${s2} ${p2}`, key, oldResult });
+        updateRanking(); renderTable(); renderHistory(); saveData();
       }
     }
-
     function deleteResult(key) {
       if (results[key]) {
         let {p1, p2, score1, score2} = results[key];
         let oldResult = {...results[key]};
-        historyLog.push({ 
-          action: "ลบผล", 
-          text: `${p1} ${score1} - ${score2} ${p2}`, 
-          key, 
-          oldResult 
-        });
-        delete results[key];
-        updateRanking();
-        renderTable();
-        renderHistory();
-        saveData();
+        historyLog.push({ action: "ลบผล", text: `${p1} ${score1} - ${score2} ${p2}`, key, oldResult });
+        delete results[key]; updateRanking(); renderTable(); renderHistory(); saveData();
       }
     }
-
     function undoAction(index) {
       let log = historyLog[index];
       if (!log) return;
-
       if (log.action === "บันทึกผล") {
-        if (log.oldResult) {
-          results[log.key] = log.oldResult;
-        } else {
-          delete results[log.key];
-        }
-      } else if (log.action === "ลบผล") {
-        results[log.key] = log.oldResult;
-      }
-
+        if (log.oldResult) results[log.key] = log.oldResult; else delete results[log.key];
+      } else if (log.action === "ลบผล") results[log.key] = log.oldResult;
       historyLog.push({ action: "Undo", text: `↩ ย้อนคืน: ${log.text}` });
-      updateRanking();
-      renderTable();
-      renderHistory();
-      saveData();
+      updateRanking(); renderTable(); renderHistory(); saveData();
     }
-
     function updateRanking() {
-      let stats = {};
-      players.forEach(p => stats[p] = {wins: 0, losses: 0, points: 0});
-
+      let stats = {}; players.forEach(p => stats[p] = {wins:0,losses:0,points:0});
       for (let key in results) {
-        let {p1, p2, score1, score2} = results[key];
-        stats[p1].points += score1;
-        stats[p2].points += score2;
-        if (score1 > score2) { stats[p1].wins++; stats[p2].losses++; }
-        else if (score2 > score1) { stats[p2].wins++; stats[p1].losses++; }
+        let {p1,p2,score1,score2} = results[key];
+        stats[p1].points += score1; stats[p2].points += score2;
+        if (score1>score2){stats[p1].wins++; stats[p2].losses++;} 
+        else if(score2>score1){stats[p2].wins++; stats[p1].losses++;}
       }
-
-      let ranking = Object.entries(stats).map(([name, data]) => ({ name, ...data }));
-      ranking.sort((a, b) => b.wins - a.wins || b.points - a.points);
-
+      let ranking = Object.entries(stats).map(([name,data]) => ({name,...data}));
+      ranking.sort((a,b)=>b.wins-a.wins||b.points-a.points);
       let tbody = document.querySelector("#rankingTable tbody");
       tbody.innerHTML = "";
-      ranking.forEach((p, i) => {
-        let crown = i === 0 ? "👑 " : "";
-        let row = `<tr style="${i===0 ? 'font-weight:bold; background:rgba(255,215,0,0.2);' : ''}">
-          <td>${i + 1}</td>
-          <td>${crown}${p.name}</td>
-          <td>${p.wins}</td>
-          <td>${p.losses}</td>
-          <td>${p.points}</td>
-        </tr>`;
+      ranking.forEach((p,i)=>{
+        let row = `<tr style="${i===0?'font-weight:bold; background:#ffeaa7;':''}">
+          <td>${i+1}</td><td>${i===0?'👑 ':''}${p.name}</td>
+          <td>${p.wins}</td><td>${p.losses}</td><td>${p.points}</td></tr>`;
         tbody.innerHTML += row;
       });
     }
-
     function toggleHistory() {
-      let page = document.getElementById("historyPage");
-      page.style.display = (page.style.display === "none" || page.style.display === "") ? "block" : "none";
+      let page=document.getElementById("historyPage");
+      page.style.display=(page.style.display==="none"||page.style.display==="")?"block":"none";
     }
-
     function renderHistory() {
-      let logDiv = document.getElementById("historyLog");
-      logDiv.innerHTML = "";
-      historyLog.forEach((item, index) => {
-        logDiv.innerHTML += `<div class="history-item">${item.action}: ${item.text} 
+      let logDiv=document.getElementById("historyLog"); logDiv.innerHTML="";
+      historyLog.forEach((item,index)=>{
+        logDiv.innerHTML += `<div class="history-item">${item.action}: ${item.text}
           <button class="undo-btn" onclick="undoAction(${index})">Undo</button></div>`;
       });
     }
-
-    // โหลดข้อมูลเมื่อเริ่มต้น
     loadData();
   </script>
 </body>
