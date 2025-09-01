@@ -3,249 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <title>🏸 Badmintion Score (Ai pen kon tam)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body {
-      font-family: "Fredoka", "Noto Sans Thai Rounded", sans-serif;
-      background: linear-gradient(to bottom, #87ceeb, #fcd77f, #d2a679);
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    h2, h3 {
-      font-weight: 600;
-      color: #5a3e2b;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .header h1 {
-      font-size: 28px;
-      color: #5a3e2b;
-      text-shadow: 2px 2px #f9e29c;
-    }
-    .container {
-      background: #fff8e7;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 6px 15px rgba(150, 100, 50, 0.3);
-      margin-bottom: 20px;
-    }
-    input {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #d2a679;
-      width: 220px;
-      font-size: 14px;
-    }
-    button {
-      padding: 10px 15px;
-      border-radius: 8px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px;
-      margin: 5px;
-    }
-    .btn-brown { background: #8b5e3c; color: #fff; }
-    .btn-yellow { background: #f7c948; color: #5a3e2b; }
-    .btn-green { background: #a3d977; color: #2b4d1e; }
-    .btn-red { background: #e76f51; color: #fff; }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 15px;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    th, td {
-      border: 1px solid #e0c097;
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
-    }
-    th {
-      background: #f7c948;
-      color: #5a3e2b;
-    }
-    tr:nth-child(even) { background: #fff2cc; }
-    tr:hover td { background: #ffeaa7; }
-    .score-cell { cursor: pointer; }
-    .delete-btn { color: #e63946; margin-left: 6px; cursor: pointer; }
-
-    .history-item {
-      background: #fffbe6;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 8px;
-      box-shadow: 0 2px 5px rgba(150, 100, 50, 0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .undo-btn {
-      background: #a3d977;
-      border: none;
-      color: #2b4d1e;
-      padding: 5px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: bold;
-    }
+    body { font-family: "Fredoka","Noto Sans Thai Rounded",sans-serif; background:#faf3e0; margin:20px; }
+    h2,h3 { color:#5a3e2b; }
+    .container { background:#fff8e7; padding:20px; border-radius:16px; box-shadow:0 6px 15px rgba(150,100,50,0.3); margin-bottom:20px; }
+    button { padding:10px 15px; border-radius:8px; border:none; margin:5px; cursor:pointer; font-weight:600; }
+    .btn-green{background:#a3d977;color:#2b4d1e;} .btn-yellow{background:#f7c948;color:#5a3e2b;}
+    .btn-red{background:#e76f51;color:#fff;} .btn-blue{background:#4da6ff;color:#fff;}
+    table{border-collapse:collapse;width:100%;margin-top:15px;border-radius:12px;overflow:hidden;}
+    th,td{border:1px solid #e0c097;padding:8px;text-align:center;font-size:14px;}
+    th{background:#f7c948;color:#5a3e2b;}
+    tr:nth-child(even){background:#fff2cc;} tr:hover td{background:#ffeaa7;}
+    .history-item{background:#fffbe6;border-radius:10px;padding:8px;margin-bottom:6px;box-shadow:0 2px 5px rgba(150,100,50,0.2);}
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>🏜️ Badmintion Score (Ai pen kon tam) 🌵🏸</h1>
-  </div>
-
   <div class="container">
-    <h2>เพิ่มผู้เล่น</h2>
+    <h2>🏜️ Badmintion Score (Ai pen kon tam)</h2>
     <input type="text" id="playerName" placeholder="เช่น ตง - พรีม">
-    <button class="btn-green" onclick="addPlayer()">➕ เพิ่ม</button>
+    <button class="btn-green" onclick="addPlayer()">➕ เพิ่มผู้เล่น</button>
     <button class="btn-red" onclick="resetAll()">♻ รีเซ็ต</button>
     <button class="btn-yellow" onclick="toggleHistory()">📜 ประวัติ</button>
+    <button class="btn-blue" onclick="exportExcel()">📤 Export Excel</button>
+    <button class="btn-blue" onclick="exportPDF()">📄 Export PDF</button>
   </div>
 
   <div class="container" id="matchTable"></div>
 
   <div class="container ranking">
-    <h3>🏆 Ranking Board</h3>
-    <table id="rankingTable">
-      <thead>
-        <tr>
-          <th>อันดับ</th>
-          <th>ชื่อทีม</th>
-          <th>ชนะ</th>
-          <th>แพ้</th>
-          <th>แต้มรวม</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <h3>🏆 Ranking</h3>
+    <table id="rankingTable"><thead>
+      <tr><th>อันดับ</th><th>ชื่อทีม</th><th>ชนะ</th><th>แพ้</th><th>แต้มรวม</th></tr>
+    </thead><tbody></tbody></table>
   </div>
 
   <div class="container history-page" id="historyPage" style="display:none;">
-    <h3>📜 ประวัติการบันทึก</h3>
+    <h3>📜 Match Log</h3>
     <div id="historyLog"></div>
   </div>
 
-  <script>
-    let players = [];
-    let results = {}; 
-    let historyLog = []; 
+  <div class="container">
+    <h3>📊 Player Analytics</h3>
+    <canvas id="chartWinrate"></canvas>
+  </div>
 
-    function loadData() {
-      if (localStorage.getItem("players")) players = JSON.parse(localStorage.getItem("players"));
-      if (localStorage.getItem("results")) results = JSON.parse(localStorage.getItem("results"));
-      if (localStorage.getItem("historyLog")) historyLog = JSON.parse(localStorage.getItem("historyLog"));
-      renderTable();
-      updateRanking();
-      renderHistory();
-    }
-    function saveData() {
-      localStorage.setItem("players", JSON.stringify(players));
-      localStorage.setItem("results", JSON.stringify(results));
-      localStorage.setItem("historyLog", JSON.stringify(historyLog));
-    }
-    function getKey(p1, p2) { return [p1, p2].sort().join("|"); }
-    function addPlayer() {
-      let name = document.getElementById("playerName").value.trim();
-      if (name && !players.includes(name)) {
-        players.push(name);
-        document.getElementById("playerName").value = "";
-        renderTable(); updateRanking(); saveData();
-      }
-    }
-    function resetAll() {
-      if (!confirm("⚠️ รีเซ็ตข้อมูลทั้งหมด?")) return;
-      players = []; results = {}; historyLog = [];
-      renderTable(); updateRanking(); renderHistory(); saveData();
-    }
-    function renderTable() {
-      let html = "<table><tr><th></th>";
-      players.forEach(p => html += `<th>${p}</th>`);
-      html += "</tr>";
-      players.forEach((p1, i) => {
-        html += `<tr><th>${p1}</th>`;
-        players.forEach((p2, j) => {
-          if (i === j) html += `<td style="background:#fcd77f">-</td>`;
-          else {
-            let key = getKey(p1, p2);
-            let match = results[key] || {};
-            let display = match.score1 !== undefined ? 
-              (match.p1 === p1 ? `${match.score1}:${match.score2}` : `${match.score2}:${match.score1}`) 
-              + ` <span class='delete-btn' onclick="deleteResult('${key}')">✕</span>` : "";
-            html += `<td class="score-cell" onclick="enterScore('${p1}','${p2}')">${display}</td>`;
-          }
-        });
-        html += "</tr>";
-      });
-      html += "</table>";
-      document.getElementById("matchTable").innerHTML = html;
-    }
-    function enterScore(p1, p2) {
-      let s1 = prompt("แต้มของ " + p1);
-      let s2 = prompt("แต้มของ " + p2);
-      if (s1 !== null && s2 !== null && !isNaN(s1) && !isNaN(s2)) {
-        let key = getKey(p1, p2);
-        let oldResult = results[key] ? {...results[key]} : null;
-        results[key] = {p1, p2, score1: parseInt(s1), score2: parseInt(s2)};
-        historyLog.push({ action: "บันทึกผล", text: `${p1} ${s1} - ${s2} ${p2}`, key, oldResult });
-        updateRanking(); renderTable(); renderHistory(); saveData();
-      }
-    }
-    function deleteResult(key) {
-      if (results[key]) {
-        let {p1, p2, score1, score2} = results[key];
-        let oldResult = {...results[key]};
-        historyLog.push({ action: "ลบผล", text: `${p1} ${score1} - ${score2} ${p2}`, key, oldResult });
-        delete results[key]; updateRanking(); renderTable(); renderHistory(); saveData();
-      }
-    }
-    function undoAction(index) {
-      let log = historyLog[index];
-      if (!log) return;
-      if (log.action === "บันทึกผล") {
-        if (log.oldResult) results[log.key] = log.oldResult; else delete results[log.key];
-      } else if (log.action === "ลบผล") results[log.key] = log.oldResult;
-      historyLog.push({ action: "Undo", text: `↩ ย้อนคืน: ${log.text}` });
-      updateRanking(); renderTable(); renderHistory(); saveData();
-    }
-    function updateRanking() {
-      let stats = {}; players.forEach(p => stats[p] = {wins:0,losses:0,points:0});
-      for (let key in results) {
-        let {p1,p2,score1,score2} = results[key];
-        stats[p1].points += score1; stats[p2].points += score2;
-        if (score1>score2){stats[p1].wins++; stats[p2].losses++;} 
-        else if(score2>score1){stats[p2].wins++; stats[p1].losses++;}
-      }
-      let ranking = Object.entries(stats).map(([name,data]) => ({name,...data}));
-      ranking.sort((a,b)=>b.wins-a.wins||b.points-a.points);
-      let tbody = document.querySelector("#rankingTable tbody");
-      tbody.innerHTML = "";
-      ranking.forEach((p,i)=>{
-        let row = `<tr style="${i===0?'font-weight:bold; background:#ffeaa7;':''}">
-          <td>${i+1}</td><td>${i===0?'👑 ':''}${p.name}</td>
-          <td>${p.wins}</td><td>${p.losses}</td><td>${p.points}</td></tr>`;
-        tbody.innerHTML += row;
-      });
-    }
-    function toggleHistory() {
-      let page=document.getElementById("historyPage");
-      page.style.display=(page.style.display==="none"||page.style.display==="")?"block":"none";
-    }
-    function renderHistory() {
-      let logDiv=document.getElementById("historyLog"); logDiv.innerHTML="";
-      historyLog.forEach((item,index)=>{
-        logDiv.innerHTML += `<div class="history-item">${item.action}: ${item.text}
-          <button class="undo-btn" onclick="undoAction(${index})">Undo</button></div>`;
-      });
-    }
-    loadData();
-  </script>
+<script>
+let players=[],results={},historyLog=[];
+
+// โหลด/บันทึก localStorage
+function loadData(){if(localStorage.getItem("players"))players=JSON.parse(localStorage.getItem("players"));
+if(localStorage.getItem("results"))results=JSON.parse(localStorage.getItem("results"));
+if(localStorage.getItem("historyLog"))historyLog=JSON.parse(localStorage.getItem("historyLog"));
+renderTable();updateRanking();renderHistory();}
+function saveData(){localStorage.setItem("players",JSON.stringify(players));
+localStorage.setItem("results",JSON.stringify(results));
+localStorage.setItem("historyLog",JSON.stringify(historyLog));}
+
+function getKey(p1,p2){return [p1,p2].sort().join("|");}
+function addPlayer(){let name=document.getElementById("playerName").value.trim();
+if(name&&!players.includes(name)){players.push(name);document.getElementById("playerName").value="";
+renderTable();updateRanking();saveData();}}
+function resetAll(){if(!confirm("⚠️ รีเซ็ตข้อมูลทั้งหมด?"))return;
+players=[];results={};historyLog=[];renderTable();updateRanking();renderHistory();saveData();}
+function renderTable(){let html="<table><tr><th></th>";players.forEach(p=>html+=`<th>${p}</th>`);html+="</tr>";
+players.forEach((p1,i)=>{html+=`<tr><th>${p1}</th>`;players.forEach((p2,j)=>{if(i===j)html+="<td>-</td>";else{let key=getKey(p1,p2);
+let match=results[key]||{};let display=match.score1!==undefined?(match.p1===p1?`${match.score1}:${match.score2}`:`${match.score2}:${match.score1}`):"";
+html+=`<td class="score-cell" onclick="enterScore('${p1}','${p2}')">${display}</td>`;}});html+="</tr>";});html+="</table>";
+document.getElementById("matchTable").innerHTML=html;}
+function enterScore(p1,p2){let s1=prompt("แต้มของ "+p1);let s2=prompt("แต้มของ "+p2);
+if(s1!==null&&s2!==null&&!isNaN(s1)&&!isNaN(s2)){let key=getKey(p1,p2);results[key]={p1,p2,score1:parseInt(s1),score2:parseInt(s2),time:new Date().toLocaleString()};
+historyLog.push({text:`${p1} ${s1}-${s2} ${p2}`,time:new Date().toLocaleString()});updateRanking();renderTable();renderHistory();saveData();}}
+function renderHistory(){let logDiv=document.getElementById("historyLog");logDiv.innerHTML="";
+historyLog.forEach(item=>{logDiv.innerHTML+=`<div class="history-item">⏰ ${item.time} - ${item.text}</div>`;});}
+function toggleHistory(){let p=document.getElementById("historyPage");p.style.display=(p.style.display==="none"||p.style.display==="")?"block":"none";}
+
+function updateRanking(){let stats={};players.forEach(p=>stats[p]={wins:0,losses:0,points:0});
+for(let key in results){let {p1,p2,score1,score2}=results[key];stats[p1].points+=score1;stats[p2].points+=score2;
+if(score1>score2){stats[p1].wins++;stats[p2].losses++;}else if(score2>score1){stats[p2].wins++;stats[p1].losses++;}}
+let ranking=Object.entries(stats).map(([name,data])=>({name,...data}));
+ranking.sort((a,b)=>b.wins-a.wins||b.points-a.points);
+let tbody=document.querySelector("#rankingTable tbody");tbody.innerHTML="";
+ranking.forEach((p,i)=>{tbody.innerHTML+=`<tr><td>${i+1}</td><td>${i===0?"👑":""} ${p.name}</td><td>${p.wins}</td><td>${p.losses}</td><td>${p.points}</td></tr>`;});
+updateChart(ranking);}
+let chart;
+function updateChart(ranking){let ctx=document.getElementById("chartWinrate").getContext("2d");
+if(chart)chart.destroy();chart=new Chart(ctx,{type:"bar",data:{labels:ranking.map(r=>r.name),
+datasets:[{label:"Wins",data:ranking.map(r=>r.wins),backgroundColor:"#f7c948"},
+{label:"Losses",data:ranking.map(r=>r.losses),backgroundColor:"#e76f51"}]},options:{responsive:true,plugins:{legend:{position:"bottom"}}}});}
+
+// Export Excel
+function exportExcel(){let wb=XLSX.utils.book_new();
+let ws1=XLSX.utils.json_to_sheet(players.map(p=>({Player:p})));
+XLSX.utils.book_append_sheet(wb,ws1,"Players");
+let ws2=XLSX.utils.json_to_sheet(historyLog);
+XLSX.utils.book_append_sheet(wb,ws2,"MatchLog");
+XLSX.writeFile(wb,"badminton_score.xlsx");}
+// Export PDF
+function exportPDF(){const {jsPDF}=window.jspdf;let doc=new jsPDF();doc.text("🏸 Badmintion Score Report",10,10);
+historyLog.forEach((m,i)=>{doc.text(`${m.time} - ${m.text}`,10,20+i*8);});doc.save("report.pdf");}
+
+loadData();
+</script>
 </body>
 </html>
